@@ -1,4 +1,9 @@
-baseURL = 'https://example.org/'
-languageCode = 'en-us'
-title = 'My New Hugo Site'
+baseURL = 'https://kiuyty.github.io/blog/'
+languageCode = 'zh-cn'  # 改成中文
+title = '望旌的小窝'     # 改成你的博客名
 theme = 'ananke'
+
+# 添加作者信息
+[params]
+  author = "望旌"
+  description = "我的个人博客"
