@@ -4,5 +4,5 @@ menu:
         name: 主页
         weight: 1
         params:
-            icon: 主页
+            icon: home
 ---
