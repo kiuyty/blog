@@ -1,6 +1,6 @@
 ---
 title: "搜索"
-slug: "search"
+slug: "搜索"
 layout: "search"
 outputs:
     - html
@@ -9,5 +9,5 @@ menu:
     main:
         weight: 3
         params: 
-            icon: 搜索
+            icon: search
 ---
