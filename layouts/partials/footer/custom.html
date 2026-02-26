@@ -1,11 +1,12 @@
 {{- /* 添加Live2D看板娘 */ -}}
 <script>
-  // 使用 GitHub 原始文件链接（无缓存，立即生效）
+  // 使用你的 GitHub 仓库
   const cdnPath = "https://raw.githubusercontent.com/kiuyty/live2d/main";
   
   const config = {
     path: {
       homePath: "/",
+      // 注意：这里必须是 Resources 目录，因为 model_list.json 在这个目录下
       modelPath: cdnPath + "/Resources/",
       cssPath: cdnPath + "/css/waifu.css",
       tipsJsonPath: cdnPath + "/Resources/waifu-tips.json",
@@ -22,5 +23,78 @@
   }
 
   console.log('Live2D 加载中...', cdnPath);
-  // ... 其余代码保持不变
+  console.log('模型列表路径:', config.path.modelPath + 'model_list.json');
+
+  if (screen.width >= 768) {
+    Promise.all([
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js")
+    ]).then(() => {
+      console.log('所有资源加载完成，准备初始化...');
+      
+      // 先检查 model_list.json 是否能正常获取
+      fetch(config.path.modelPath + 'model_list.json')
+        .then(response => {
+          console.log('model_list.json 状态:', response.status);
+          return response.json();
+        })
+        .then(data => {
+          console.log('model_list.json 内容:', data);
+          
+          // 确认数据正确后再初始化
+          if (data && data.length > 0) {
+            console.log('找到模型:', data[0].name);
+            
+            if (typeof initWidget === 'function') {
+              initWidget({
+                waifuPath: config.path.tipsJsonPath,
+                cdnPath: config.path.modelPath,
+                tools: config.tools,
+                dragEnable: config.drag.enable,
+                dragDirection: config.drag.direction,
+                switchType: config.switchType
+              });
+              console.log('Live2D 初始化成功！');
+            } else {
+              console.error('initWidget 函数未找到');
+            }
+          } else {
+            console.error('model_list.json 内容为空');
+          }
+        })
+        .catch(error => {
+          console.error('获取 model_list.json 失败:', error);
+        });
+    }).catch(error => {
+      console.error('Live2D 资源加载失败:', error);
+    });
+  }
+
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      console.log('加载:', url);
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      } else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => {
+          console.log('加载成功:', url);
+          resolve(url);
+        };
+        tag.onerror = (e) => {
+          console.error('加载失败:', url, e);
+          reject(url);
+        };
+        document.head.appendChild(tag);
+      }
+    });
+  }
 </script>
