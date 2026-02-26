@@ -1,12 +1,10 @@
 {{- /* 添加Live2D看板娘 */ -}}
 <script>
-  // 使用你的 GitHub 仓库
   const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
   
   const config = {
     path: {
       homePath: "/",
-      // 注意：这里必须是 Resources 目录，因为 model_list.json 在这个目录下
       modelPath: cdnPath + "/Resources/",
       cssPath: cdnPath + "/css/waifu.css",
       tipsJsonPath: cdnPath + "/Resources/waifu-tips.json",
@@ -34,7 +32,7 @@
     ]).then(() => {
       console.log('所有资源加载完成，准备初始化...');
       
-      // 先检查 model_list.json 是否能正常获取
+      // 先检查 model_list.json
       fetch(config.path.modelPath + 'model_list.json')
         .then(response => {
           console.log('model_list.json 状态:', response.status);
@@ -43,18 +41,27 @@
         .then(data => {
           console.log('model_list.json 内容:', data);
           
-          // 确认数据正确后再初始化
           if (data && data.length > 0) {
             console.log('找到模型:', data[0].name);
             
+            // 重要：检查 model_list.json 的格式
+            // 有些版本需要 models 字段，有些直接是数组
+            if (data.models) {
+              console.log('检测到带 models 字段的格式');
+            } else {
+              console.log('检测到直接数组格式');
+            }
+            
             if (typeof initWidget === 'function') {
+              // 尝试直接传入 model_list.json 的内容
               initWidget({
                 waifuPath: config.path.tipsJsonPath,
                 cdnPath: config.path.modelPath,
                 tools: config.tools,
                 dragEnable: config.drag.enable,
                 dragDirection: config.drag.direction,
-                switchType: config.switchType
+                switchType: config.switchType,
+                modelList: data  // 直接传入模型列表
               });
               console.log('Live2D 初始化成功！');
             } else {
