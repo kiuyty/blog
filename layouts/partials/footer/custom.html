@@ -7,7 +7,8 @@
       modelPath: cdnPath + "/Resources/",
       cssPath: cdnPath + "/waifu.css",
       tipsJsonPath: cdnPath + "/waifu-tips.json",
-      tipsJsPath: cdnPath + "/live2d-widget-v3@main/waifu-tips.js",
+      // 修复这个路径 - 删除多余的 @main
+      tipsJsPath: cdnPath + "/waifu-tips.js",
       live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
       live2dSdkPath: cdnPath + "/live2d-sdk.js"
     },
@@ -27,19 +28,27 @@
       loadExternalResource(config.path.live2dSdkPath, "js"),
       loadExternalResource(config.path.tipsJsPath, "js")
     ]).then(() => {
-      initWidget({
-        waifuPath: config.path.tipsJsonPath,
-        cdnPath: config.path.modelPath,
-        tools: config.tools,
-        dragEnable: config.drag.enable,
-        dragDirection: config.drag.direction,
-        switchType: config.switchType
-      });
+      // 检查 initWidget 是否存在
+      if (typeof initWidget === 'function') {
+        initWidget({
+          waifuPath: config.path.tipsJsonPath,
+          cdnPath: config.path.modelPath,
+          tools: config.tools,
+          dragEnable: config.drag.enable,
+          dragDirection: config.drag.direction,
+          switchType: config.switchType
+        });
+      } else {
+        console.error('initWidget function not found');
+      }
+    }).catch(error => {
+      console.error('Failed to load Live2D resources:', error);
     });
   }
 
   function loadExternalResource(url, type) {
     return new Promise((resolve, reject) => {
+      console.log('Loading:', url); // 添加日志便于调试
       let tag;
       if (type === "css") {
         tag = document.createElement("link");
@@ -50,8 +59,14 @@
         tag.src = url;
       }
       if (tag) {
-        tag.onload = () => resolve(url);
-        tag.onerror = () => reject(url);
+        tag.onload = () => {
+          console.log('Loaded:', url);
+          resolve(url);
+        };
+        tag.onerror = (e) => {
+          console.error('Failed to load:', url, e);
+          reject(url);
+        };
         document.head.appendChild(tag);
       }
     });
