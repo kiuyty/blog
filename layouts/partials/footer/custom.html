@@ -1,10 +1,10 @@
-{{- /* 添加Live2D看板娘 - 绝对路径版 */ -}}
+{{- /* 添加Live2D看板娘 - SDK适配版 */ -}}
 <script>
   (function() {
     const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
     
-    // 直接定义完整的模型路径
-    const modelFullPath = cdnPath + "/Resources/model/lafei/lafei.model3.json";
+    // 定义模型所在的目录路径（关键修正）
+    const modelDirPath = cdnPath + "/Resources/model/lafei/";
     
     const config = {
       path: {
@@ -21,8 +21,8 @@
       switchType: "order"
     };
 
-    console.log('Live2D 绝对路径版启动', cdnPath);
-    console.log('模型完整路径:', modelFullPath);
+    console.log('Live2D SDK适配版启动', cdnPath);
+    console.log('模型目录路径:', modelDirPath); // 现在输出的是目录
 
     if (screen.width < 768) {
       console.log('移动端不显示');
@@ -50,7 +50,7 @@
             console.log('调用 initWidget');
             window.initWidget({
               waifuPath: config.path.tipsJsonPath,
-              cdnPath: config.path.modelPath,
+              cdnPath: config.path.modelPath, // 注意：这里仍然是 Resources 目录
               tools: config.tools,
               dragEnable: config.drag.enable,
               dragDirection: config.drag.direction,
@@ -59,13 +59,14 @@
             });
           }
           
-          // 使用绝对路径直接加载模型
+          // 按照 SDK 期望的方式加载模型
           setTimeout(() => {
             if (window.live2d) {
-              console.log('使用绝对路径加载模型:', modelFullPath);
+              console.log('按照 SDK 规范加载模型，目录:', modelDirPath);
               
-              // 直接使用完整路径加载，不依赖 init
-              window.live2d.loadModel(modelFullPath);
+              // 重要：这里传入的是模型所在的目录路径
+              // SDK 会自动寻找目录下的 .model3.json 文件
+              window.live2d.loadModel(modelDirPath);
             }
           }, 1500);
           
