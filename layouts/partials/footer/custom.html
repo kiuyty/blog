@@ -1,7 +1,6 @@
-{{- /* 添加Live2D看板娘 - 终极强制修复版 */ -}}
+{{- /* 添加Live2D看板娘 - 路径修复版 */ -}}
 <script>
   (function() {
-    // 配置
     const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
     const config = {
       path: {
@@ -18,62 +17,30 @@
       switchType: "order"
     };
 
-    console.log('Live2D 终极修复版启动', cdnPath);
+    console.log('Live2D 路径修复版启动', cdnPath);
 
     if (screen.width < 768) {
       console.log('移动端不显示');
       return;
     }
 
-    // 加载所有资源
     Promise.all([
       loadCSS(config.path.cssPath),
       loadScript(config.path.live2dCorePath),
       loadScript(config.path.live2dSdkPath),
       loadScript(config.path.tipsJsPath).then(() => {
-        console.log('waifu-tips.js 已加载，准备强制修补...');
+        console.log('waifu-tips.js 已加载');
         return new Promise(resolve => setTimeout(resolve, 300));
       })
     ]).then(() => {
-      console.log('所有资源就绪，执行强制修补...');
+      console.log('所有资源就绪...');
       
-      // ========== 强制修补核心 ==========
-      // 1. 预加载模型数据
       return fetch(config.path.modelPath + 'model_list.json')
         .then(r => r.json())
         .then(modelData => {
           console.log('模型数据已加载:', modelData);
           
-          // 2. 强制替换可能出问题的全局函数
-          if (typeof window.loadModelList === 'function') {
-            const original = window.loadModelList;
-            window.loadModelList = async function() {
-              console.log('拦截 loadModelList');
-              return { models: modelData };
-            };
-          }
-          
-          // 3. 查找并替换 live2d 对象的方法
-          if (window.live2d) {
-            const originalLoadModel = window.live2d.loadModel;
-            window.live2d.loadModel = function(path) {
-              console.log('拦截 live2d.loadModel:', path);
-              // 确保路径正确
-              if (path && !path.includes('lafei')) {
-                path = config.path.modelPath + 'model/lafei/lafei.model3.json';
-              }
-              return originalLoadModel.call(this, path);
-            };
-          }
-          
-          // 4. 如果存在 ModelManager，直接替换
-          if (window.ModelManager) {
-            window.ModelManager.prototype.getModelList = function() {
-              return { models: modelData };
-            };
-          }
-          
-          // 5. 最后调用原始 initWidget，但传入完整数据
+          // 调用 initWidget
           if (typeof window.initWidget === 'function') {
             console.log('调用 initWidget');
             window.initWidget({
@@ -87,20 +54,26 @@
             });
           }
           
-          // 6. 手动设置模型路径并加载
+          // 关键修复：确保路径正确
           setTimeout(() => {
             if (window.live2d) {
+              // 先初始化，路径要正确
               window.live2d.init(config.path.modelPath + 'model/');
-              window.live2d.loadModel(config.path.modelPath + 'model/lafei/lafei.model3.json');
-              console.log('手动触发模型加载');
+              
+              // 构建正确的模型路径
+              // 注意：不要重复 model/lafei，因为 init 已经指定了 model/ 目录
+              const modelPath = 'lafei/lafei.model3.json';
+              console.log('尝试加载模型:', modelPath);
+              
+              // 加载模型
+              window.live2d.loadModel(modelPath);
             }
-          }, 500);
+          }, 1000);
           
-          console.log('🎉 强制修补完成');
+          console.log('🎉 初始化完成');
         });
     }).catch(e => console.error('初始化失败:', e));
 
-    // 辅助函数
     function loadCSS(url) {
       return new Promise((resolve, reject) => {
         const link = document.createElement('link');
@@ -124,7 +97,6 @@
   })();
 </script>
 
-<!-- 基础样式 -->
 <style>
   #waifu { right: 0; bottom: 0; left: auto; }
   #waifu-toggle { right: 5px; left: auto; }
