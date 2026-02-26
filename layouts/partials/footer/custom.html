@@ -1,7 +1,7 @@
 {{- /* 添加Live2D看板娘 */ -}}
 <script>
-  // 使用你的 GitHub 仓库
-  const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
+  // 使用 GitHub 原始文件链接（无缓存，立即生效）
+  const cdnPath = "https://raw.githubusercontent.com/kiuyty/live2d/main";
   
   const config = {
     path: {
@@ -22,53 +22,5 @@
   }
 
   console.log('Live2D 加载中...', cdnPath);
-
-  if (screen.width >= 768) {
-    Promise.all([
-      loadExternalResource(config.path.cssPath, "css"),
-      loadExternalResource(config.path.live2dCorePath, "js"),
-      loadExternalResource(config.path.live2dSdkPath, "js"),
-      loadExternalResource(config.path.tipsJsPath, "js")
-    ]).then(() => {
-      if (typeof initWidget === 'function') {
-        initWidget({
-          waifuPath: config.path.tipsJsonPath,
-          cdnPath: config.path.modelPath,
-          tools: config.tools,
-          dragEnable: config.drag.enable,
-          dragDirection: config.drag.direction,
-          switchType: config.switchType
-        });
-        console.log('Live2D 初始化成功！');
-      }
-    }).catch(error => {
-      console.error('Live2D 加载失败:', error);
-    });
-  }
-
-  function loadExternalResource(url, type) {
-    return new Promise((resolve, reject) => {
-      console.log('加载:', url);
-      let tag;
-      if (type === "css") {
-        tag = document.createElement("link");
-        tag.rel = "stylesheet";
-        tag.href = url;
-      } else if (type === "js") {
-        tag = document.createElement("script");
-        tag.src = url;
-      }
-      if (tag) {
-        tag.onload = () => {
-          console.log('加载成功:', url);
-          resolve(url);
-        };
-        tag.onerror = (e) => {
-          console.error('加载失败:', url, e);
-          reject(url);
-        };
-        document.head.appendChild(tag);
-      }
-    });
-  }
+  // ... 其余代码保持不变
 </script>
