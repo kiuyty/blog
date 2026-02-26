@@ -1,4 +1,4 @@
-{{- /* 添加Live2D看板娘 */ -}}
+{{- /* 添加Live2D看板娘 - 最终修复版 */ -}}
 <script>
   const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
   
@@ -21,7 +21,6 @@
   }
 
   console.log('Live2D 加载中...', cdnPath);
-  console.log('模型列表路径:', config.path.modelPath + 'model_list.json');
 
   if (screen.width >= 768) {
     Promise.all([
@@ -30,50 +29,72 @@
       loadExternalResource(config.path.live2dSdkPath, "js"),
       loadExternalResource(config.path.tipsJsPath, "js")
     ]).then(() => {
-      console.log('所有资源加载完成，准备初始化...');
-      
-      // 先检查 model_list.json
-      fetch(config.path.modelPath + 'model_list.json')
-        .then(response => {
-          console.log('model_list.json 状态:', response.status);
-          return response.json();
-        })
-        .then(data => {
-          console.log('model_list.json 内容:', data);
-          
-          if (data && data.length > 0) {
-            console.log('找到模型:', data[0].name);
+      console.log('所有资源加载完成，正在修补 waifu-tips.js...');
+
+      // --- 关键修复：在 waifu-tips.js 加载后修补它 ---
+      // 等待一小段时间确保 waifu-tips.js 已完全执行
+      setTimeout(() => {
+        // 检查是否有全局类或函数需要修补
+        if (typeof window.loadModelList === 'function') {
+          console.log('检测到 loadModelList 函数，准备修补...');
+        }
+        
+        // 尝试修补 ModelLoader 类（如果存在）
+        if (window.ModelLoader) {
+          const originalLoadModelList = window.ModelLoader.prototype.loadModelList;
+          window.ModelLoader.prototype.loadModelList = async function() {
+            console.log('修补后的 loadModelList 被调用');
+            const response = await fetch(config.path.modelPath + 'model_list.json');
+            const data = await response.json();
+            // 关键：将数组包装成 waifu-tips.js 期望的 {models: [...]} 格式
+            this.modelList = { models: data };
+            console.log('模型列表已转换格式:', this.modelList);
+            return this.modelList;
+          };
+        }
+        
+        // 另一种修补方式：直接修改全局的 modelList 设置方式
+        const originalInitWidget = window.initWidget;
+        if (originalInitWidget) {
+          window.initWidget = function(options) {
+            console.log('修补后的 initWidget 被调用, 选项:', options);
             
-            // 重要：检查 model_list.json 的格式
-            // 有些版本需要 models 字段，有些直接是数组
-            if (data.models) {
-              console.log('检测到带 models 字段的格式');
-            } else {
-              console.log('检测到直接数组格式');
+            // 如果传入了 modelList，确保其格式正确
+            if (options.modelList && Array.isArray(options.modelList)) {
+              options.modelList = { models: options.modelList };
             }
             
-            if (typeof initWidget === 'function') {
-              // 尝试直接传入 model_list.json 的内容
-              initWidget({
+            // 调用原始的 initWidget
+            originalInitWidget(options);
+          };
+        }
+        
+        console.log('修补完成，开始初始化...');
+        
+        // 获取模型列表数据
+        fetch(config.path.modelPath + 'model_list.json')
+          .then(response => response.json())
+          .then(modelData => {
+            console.log('原始模型数据:', modelData);
+            
+            // 调用 initWidget，并传入转换后的模型数据
+            if (typeof window.initWidget === 'function') {
+              window.initWidget({
                 waifuPath: config.path.tipsJsonPath,
                 cdnPath: config.path.modelPath,
                 tools: config.tools,
                 dragEnable: config.drag.enable,
                 dragDirection: config.drag.direction,
                 switchType: config.switchType,
-                modelList: data  // 直接传入模型列表
+                modelList: { models: modelData }  // 传入转换后的格式
               });
-              console.log('Live2D 初始化成功！');
+              console.log('Live2D 最终初始化完成！');
             } else {
               console.error('initWidget 函数未找到');
             }
-          } else {
-            console.error('model_list.json 内容为空');
-          }
-        })
-        .catch(error => {
-          console.error('获取 model_list.json 失败:', error);
-        });
+          });
+      }, 500); // 给 waifu-tips.js 500ms 完成初始化
+      
     }).catch(error => {
       console.error('Live2D 资源加载失败:', error);
     });
