@@ -1,235 +1,131 @@
-{{- /* 添加Live2D看板娘 - 完整最终修复版 */ -}}
+{{- /* 添加Live2D看板娘 - 终极强制修复版 */ -}}
 <script>
-  // 使用你的 GitHub 仓库 (jsDelivr CDN)
-  const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
-  
-  const config = {
-    path: {
-      homePath: "/",
-      // 模型文件路径 - 必须指向包含 model_list.json 的目录
-      modelPath: cdnPath + "/Resources/",
-      // CSS样式文件
-      cssPath: cdnPath + "/css/waifu.css",
-      // 提示语JSON文件
-      tipsJsonPath: cdnPath + "/Resources/waifu-tips.json",
-      // 提示语JS文件 (核心逻辑)
-      tipsJsPath: cdnPath + "/js/waifu-tips.js",
-      // Live2D核心引擎
-      live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
-      // Live2D SDK
-      live2dSdkPath: cdnPath + "/js/live2d-sdk.js"
-    },
-    // 工具栏按钮 - 可按需调整顺序或增减
-    tools: ["hitokoto", "asteroids", "express", "switch-model", "switch-texture", "photo", "info", "quit"],
-    // 拖拽设置
-    drag: {
-      enable: true,           // 是否启用拖拽
-      direction: ["x", "y"]    // 可拖拽方向: x-水平, y-垂直
-    },
-    // 模型切换方式: order(顺序) 或 random(随机)
-    switchType: "order"
-  }
+  (function() {
+    // 配置
+    const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
+    const config = {
+      path: {
+        homePath: "/",
+        modelPath: cdnPath + "/Resources/",
+        cssPath: cdnPath + "/css/waifu.css",
+        tipsJsonPath: cdnPath + "/Resources/waifu-tips.json",
+        tipsJsPath: cdnPath + "/js/waifu-tips.js",
+        live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
+        live2dSdkPath: cdnPath + "/js/live2d-sdk.js"
+      },
+      tools: ["hitokoto", "asteroids", "express", "switch-model", "switch-texture", "photo", "info", "quit"],
+      drag: { enable: true, direction: ["x", "y"] },
+      switchType: "order"
+    };
 
-  console.log('Live2D 加载中...', cdnPath);
-  console.log('模型列表路径:', config.path.modelPath + 'model_list.json');
+    console.log('Live2D 终极修复版启动', cdnPath);
 
-  // 只在桌面端显示 (屏幕宽度 >= 768px)
-  if (screen.width >= 768) {
-    // 并行加载所有资源
+    if (screen.width < 768) {
+      console.log('移动端不显示');
+      return;
+    }
+
+    // 加载所有资源
     Promise.all([
-      loadExternalResource(config.path.cssPath, "css"),
-      loadExternalResource(config.path.live2dCorePath, "js"),
-      loadExternalResource(config.path.live2dSdkPath, "js"),
-      loadExternalResource(config.path.tipsJsPath, "js")
+      loadCSS(config.path.cssPath),
+      loadScript(config.path.live2dCorePath),
+      loadScript(config.path.live2dSdkPath),
+      loadScript(config.path.tipsJsPath).then(() => {
+        console.log('waifu-tips.js 已加载，准备强制修补...');
+        return new Promise(resolve => setTimeout(resolve, 300));
+      })
     ]).then(() => {
-      console.log('所有资源加载完成，正在深度修补 waifu-tips.js...');
+      console.log('所有资源就绪，执行强制修补...');
       
-      // 给 waifu-tips.js 一点时间完成初始定义
-      setTimeout(() => {
-        // ==================== 深度修补开始 ====================
-        console.log('开始执行深度修补...');
-        
-        // 1. 获取并转换模型数据
-        fetch(config.path.modelPath + 'model_list.json')
-          .then(response => {
-            console.log('model_list.json 状态:', response.status);
-            return response.json();
-          })
-          .then(rawModelData => {
-            console.log('原始模型数据:', rawModelData);
-            
-            // 2. 检查 ModelLoader 类是否存在并修补
-            if (typeof ModelLoader === 'function') {
-              console.log('✅ 找到 ModelLoader 类，正在修补其原型方法...');
-              
-              // 保存原始的 loadModelList 方法
-              const originalLoadModelList = ModelLoader.prototype.loadModelList;
-              
-              // 覆盖 loadModelList 方法 - 这是最关键的部分
-              ModelLoader.prototype.loadModelList = async function() {
-                console.log('【修补】loadModelList 被调用，正在加载模型列表...');
-                try {
-                  // 创建符合内部期望的数据结构
-                  // waifu-tips.js 内部期望 this.modelList.models 存在
-                  this.modelList = { models: rawModelData };
-                  console.log('【修补】模型列表已设置为:', this.modelList);
-                  return this.modelList;
-                } catch (error) {
-                  console.error('【修补】设置模型列表失败:', error);
-                  this.modelList = { models: [] };
-                  return this.modelList;
-                }
-              };
-              
-              // 保存原始的 loadModel 方法用于调试
-              const originalLoadModel = ModelLoader.prototype.loadModel;
-              ModelLoader.prototype.loadModel = async function(modelId, textureId, message) {
-                console.log(`【修补】loadModel 被调用: modelId=${modelId}, textureId=${textureId}`);
-                
-                // 确保 modelList 已设置
-                if (!this.modelList || !this.modelList.models) {
-                  console.log('【修补】modelList 未设置，正在设置...');
-                  this.modelList = { models: rawModelData };
-                }
-                
-                // 调用原始方法
-                return originalLoadModel.call(this, modelId, textureId, message);
-              };
-              
-              console.log('✅ ModelLoader 原型方法修补完成');
-              
-              // 3. 修补 initWidget 函数（如果存在）
-              if (typeof window.initWidget === 'function') {
-                const originalInitWidget = window.initWidget;
-                window.initWidget = function(options) {
-                  console.log('【修补】initWidget 被调用，原始选项:', options);
-                  
-                  // 确保模型数据被正确传递
-                  if (!options.modelList) {
-                    options.modelList = { models: rawModelData };
-                  }
-                  
-                  // 调用原始 initWidget
-                  originalInitWidget(options);
-                  console.log('【修补】initWidget 调用完成');
-                };
-                console.log('✅ initWidget 修补完成');
+      // ========== 强制修补核心 ==========
+      // 1. 预加载模型数据
+      return fetch(config.path.modelPath + 'model_list.json')
+        .then(r => r.json())
+        .then(modelData => {
+          console.log('模型数据已加载:', modelData);
+          
+          // 2. 强制替换可能出问题的全局函数
+          if (typeof window.loadModelList === 'function') {
+            const original = window.loadModelList;
+            window.loadModelList = async function() {
+              console.log('拦截 loadModelList');
+              return { models: modelData };
+            };
+          }
+          
+          // 3. 查找并替换 live2d 对象的方法
+          if (window.live2d) {
+            const originalLoadModel = window.live2d.loadModel;
+            window.live2d.loadModel = function(path) {
+              console.log('拦截 live2d.loadModel:', path);
+              // 确保路径正确
+              if (path && !path.includes('lafei')) {
+                path = config.path.modelPath + 'model/lafei/lafei.model3.json';
               }
-              
-              // 4. 手动触发模型加载
-              console.log('准备手动加载模型...');
-              
-              // 尝试获取 ModelLoader 实例
-              // 有些实现会将实例挂在 window 上
-              if (window.modelLoader) {
-                window.modelLoader.loadModel(0, 0, '欢迎来到博客！');
-              } else {
-                // 如果没有直接实例，尝试创建并初始化
-                try {
-                  // 检查 live2d 对象是否存在
-                  if (window.live2d) {
-                    console.log('找到 live2d 对象，尝试初始化...');
-                    
-                    // 设置模型路径
-                    window.live2d.init(config.path.modelPath + 'model/');
-                    
-                    // 加载第一个模型
-                    setTimeout(() => {
-                      if (window.live2d.loadModel) {
-                        // 构建模型完整路径
-                        const modelPath = config.path.modelPath + 'model/lafei/lafei.model3.json';
-                        console.log('加载模型:', modelPath);
-                        window.live2d.loadModel(modelPath);
-                      }
-                    }, 500);
-                  }
-                } catch (e) {
-                  console.error('手动加载模型失败:', e);
-                }
-              }
-              
-            } else {
-              console.warn('⚠️ 未找到 ModelLoader 类，使用备选方案');
-              
-              // 备选方案：直接使用原始 initWidget
-              if (typeof window.initWidget === 'function') {
-                window.initWidget({
-                  waifuPath: config.path.tipsJsonPath,
-                  cdnPath: config.path.modelPath,
-                  tools: config.tools,
-                  dragEnable: config.drag.enable,
-                  dragDirection: config.drag.direction,
-                  switchType: config.switchType,
-                  modelList: { models: rawModelData }
-                });
-                console.log('✅ 使用备选方案初始化完成');
-              }
+              return originalLoadModel.call(this, path);
+            };
+          }
+          
+          // 4. 如果存在 ModelManager，直接替换
+          if (window.ModelManager) {
+            window.ModelManager.prototype.getModelList = function() {
+              return { models: modelData };
+            };
+          }
+          
+          // 5. 最后调用原始 initWidget，但传入完整数据
+          if (typeof window.initWidget === 'function') {
+            console.log('调用 initWidget');
+            window.initWidget({
+              waifuPath: config.path.tipsJsonPath,
+              cdnPath: config.path.modelPath,
+              tools: config.tools,
+              dragEnable: config.drag.enable,
+              dragDirection: config.drag.direction,
+              switchType: config.switchType,
+              modelList: { models: modelData }
+            });
+          }
+          
+          // 6. 手动设置模型路径并加载
+          setTimeout(() => {
+            if (window.live2d) {
+              window.live2d.init(config.path.modelPath + 'model/');
+              window.live2d.loadModel(config.path.modelPath + 'model/lafei/lafei.model3.json');
+              console.log('手动触发模型加载');
             }
-            
-            console.log('🎉 所有修补工作完成！');
-          })
-          .catch(error => {
-            console.error('❌ 获取模型列表失败:', error);
-          });
-        
-        // ==================== 深度修补结束 ====================
-        
-      }, 800); // 给 waifu-tips.js 800ms 完成初始定义
-      
-    }).catch(error => {
-      console.error('Live2D 资源加载失败:', error);
-    });
-  } else {
-    console.log('移动端不显示 Live2D');
-  }
+          }, 500);
+          
+          console.log('🎉 强制修补完成');
+        });
+    }).catch(e => console.error('初始化失败:', e));
 
-  /**
-   * 异步加载外部资源 (CSS 或 JS)
-   * @param {string} url 资源URL
-   * @param {string} type 资源类型: "css" 或 "js"
-   * @returns {Promise}
-   */
-  function loadExternalResource(url, type) {
-    return new Promise((resolve, reject) => {
-      console.log('加载:', url);
-      let tag;
-      
-      if (type === "css") {
-        tag = document.createElement("link");
-        tag.rel = "stylesheet";
-        tag.href = url;
-      } else if (type === "js") {
-        tag = document.createElement("script");
-        tag.src = url;
-      } else {
-        reject(new Error(`不支持的类型: ${type}`));
-        return;
-      }
-      
-      if (tag) {
-        tag.onload = () => {
-          console.log('✅ 加载成功:', url);
-          resolve(url);
-        };
-        tag.onerror = (e) => {
-          console.error('❌ 加载失败:', url, e);
-          reject(url);
-        };
-        document.head.appendChild(tag);
-      }
-    });
-  }
+    // 辅助函数
+    function loadCSS(url) {
+      return new Promise((resolve, reject) => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = url;
+        link.onload = () => resolve(url);
+        link.onerror = reject;
+        document.head.appendChild(link);
+      });
+    }
+
+    function loadScript(url) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.onload = () => resolve(url);
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+  })();
 </script>
 
-<!-- 添加一些自定义样式来调整看板娘位置（可选） -->
+<!-- 基础样式 -->
 <style>
-  #waifu {
-    right: 0 !important;
-    bottom: 0 !important;
-    left: auto !important;
-  }
-  #waifu-toggle {
-    right: 5px !important;
-    left: auto !important;
-  }
+  #waifu { right: 0; bottom: 0; left: auto; }
+  #waifu-toggle { right: 5px; left: auto; }
 </style>
