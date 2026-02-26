@@ -1,33 +1,49 @@
-{{- /* 添加Live2D看板娘 */ -}}
+{{- /* 添加Live2D看板娘 - 本地版本 */ -}}
 <script>
-  const cdnPath = "https://cdn.jsdelivr.net/gh/letere-gzj/live2d-widget-v3@main";
+  // 基础路径 - 使用本地文件
+  const basePath = window.location.pathname.replace(/\/$/, '');
+  const localPath = basePath + '/live2d';
+  
   const config = {
     path: {
-      homePath: "/",
-      modelPath: cdnPath + "/Resources/",
-      cssPath: cdnPath + "/waifu.css",
-      tipsJsonPath: cdnPath + "/waifu-tips.json",
-      // 修复这个路径 - 删除多余的 @main
-      tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
-      live2dSdkPath: cdnPath + "/live2d-sdk.js"
+      homePath: basePath + '/',
+      // 模型文件路径
+      modelPath: localPath + '/Resources/',
+      // CSS文件路径
+      cssPath: localPath + '/css/waifu.css',
+      // 提示语JSON文件
+      tipsJsonPath: localPath + '/Resources/waifu-tips.json',
+      // JS文件路径
+      tipsJsPath: localPath + '/js/waifu-tips.js',
+      // 核心引擎文件
+      live2dCorePath: localPath + '/Core/live2dcubismcore.js',
+      live2dSdkPath: localPath + '/js/live2d-sdk.js'
     },
+    // 工具栏按钮
     tools: ["hitokoto", "asteroids", "express", "switch-model", "switch-texture", "photo", "info", "quit"],
+    // 拖拽设置
     drag: {
       enable: true,
       direction: ["x", "y"]
     },
+    // 模型切换方式：order(顺序) 或 random(随机)
     switchType: "order"
   }
 
+  // 调试信息
+  console.log('Live2D 本地路径:', localPath);
+  console.log('配置文件:', config);
+
   // 只在桌面端显示
   if (screen.width >= 768) {
+    // 加载所有资源
     Promise.all([
       loadExternalResource(config.path.cssPath, "css"),
       loadExternalResource(config.path.live2dCorePath, "js"),
       loadExternalResource(config.path.live2dSdkPath, "js"),
       loadExternalResource(config.path.tipsJsPath, "js")
     ]).then(() => {
+      console.log('Live2D 资源加载成功，初始化中...');
       // 检查 initWidget 是否存在
       if (typeof initWidget === 'function') {
         initWidget({
@@ -38,18 +54,23 @@
           dragDirection: config.drag.direction,
           switchType: config.switchType
         });
+        console.log('Live2D 初始化完成');
       } else {
-        console.error('initWidget function not found');
+        console.error('initWidget 函数未找到');
       }
     }).catch(error => {
-      console.error('Failed to load Live2D resources:', error);
+      console.error('Live2D 资源加载失败:', error);
     });
+  } else {
+    console.log('移动端不显示 Live2D');
   }
 
+  // 异步加载资源函数
   function loadExternalResource(url, type) {
     return new Promise((resolve, reject) => {
-      console.log('Loading:', url); // 添加日志便于调试
+      console.log(`加载 ${type} 文件:`, url);
       let tag;
+      
       if (type === "css") {
         tag = document.createElement("link");
         tag.rel = "stylesheet";
@@ -58,16 +79,19 @@
         tag = document.createElement("script");
         tag.src = url;
       }
+      
       if (tag) {
         tag.onload = () => {
-          console.log('Loaded:', url);
+          console.log(`加载成功:`, url);
           resolve(url);
         };
         tag.onerror = (e) => {
-          console.error('Failed to load:', url, e);
+          console.error(`加载失败:`, url, e);
           reject(url);
         };
         document.head.appendChild(tag);
+      } else {
+        reject(new Error(`不支持的类型: ${type}`));
       }
     });
   }
