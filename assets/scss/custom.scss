@@ -1,8 +1,7 @@
-/*
-    You can add your own custom styles here.
-*/
-// 【Stack主题鼠标样式写法】
-// default光标图片
+// 【Stack主题鼠标样式 - GIF光标版】
+// 注意：GIF光标在某些浏览器可能不会播放动画，会显示为第一帧
+
+// 默认光标 - 应用于整个页面
 body,
 html,
 .article-content img {
@@ -10,22 +9,33 @@ html,
   auto !important;
 }
 
-// pointer光标图片
+// 指针光标（链接/可点击元素）- 应用于所有可点击的元素
 a:hover,
 button:hover,
 .copyCodeButton:hover,
-#dark-mode-toggle {
+#dark-mode-toggle,
+.tag:hover,
+.post-title:hover,
+.read-more:hover {
   cursor: url(../mouse/链接.gif),
   auto;
 }
 
-// text光标图片
+// 文本光标 - 应用于所有文本输入和可选中文字的区域
 input:hover,
+textarea:hover,
 .site-description,
 .article-subtitle,
 .article-content span,
 .article-content li,
-.article-content p {
+.article-content p,
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6,
+pre code {
   cursor: url(../mouse/文本.gif),
   auto;
 }
