@@ -14,7 +14,10 @@
 
     [social.params]
         icon = "brand-github"
-
+[[main]]
+  name = "我的图集"
+  url = "/gallery/my-uploads/"
+  weight = 3
 [[social]]
     identifier = "twitter"
     name       = "Twitter"
