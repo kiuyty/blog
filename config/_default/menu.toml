@@ -9,7 +9,7 @@
 
 [[main]]
   identifier = "gallery"
-  name = "我的作品"
+  name = "作品"
   url = "/gallery/my-uploads/"
   weight = 3
   [main.params]
