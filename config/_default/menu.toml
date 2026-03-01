@@ -13,6 +13,7 @@
   url = "/gallery/my-uploads/"
   weight = 3
   [main.params]
+  icon = "photo"
     newtab = false
 
 [[social]]
