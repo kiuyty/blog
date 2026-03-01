@@ -19,10 +19,19 @@
 [[social]]
     identifier = "github"
     name       = "GitHub"
-    url        = "https://github.com/CaiJimmy/hugo-theme-stack"
+    url        = "https://github.com/"
 
     [social.params]
         icon = "brand-github"
+
+[[social]]
+    identifier = "bilibili"
+    name       = "Bilibili"
+    url        = "https://bilibili.com/"
+
+    [social.params]
+        icon = "bilibili"
+
 [[social]]
     identifier = "twitter"
     name       = "Twitter"
