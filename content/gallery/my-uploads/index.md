@@ -17,12 +17,5 @@ cover:
 
 ## 作品展示
 
-{{</* figure
-  src="福.jpg"
-  alt="福（2024版）"
-  caption="设计：五迷"
-  width="800"
-  class="my-image"
-*/>}}
-
+{{< figure src="福.jpg" alt="福（2024版）" caption="设计：五迷" width="800" class="my-image" >}}
 ---
