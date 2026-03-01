@@ -7,6 +7,15 @@
 #icon = "home"
 #newtab = true
 
+[[main]]
+  identifier = "gallery"
+  name = "我的作品"
+  url = "/gallery/my-uploads/"
+  weight = 3
+  [main.params]
+    icon = "photo"
+    newtab = false
+
 [[social]]
     identifier = "github"
     name       = "GitHub"
