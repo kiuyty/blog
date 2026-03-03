@@ -1,17 +1,15 @@
-{{- /* 添加Live2D看板娘 - 标准流程修复版 */ -}}
+{{- /* 添加Live2D看板娘 - 最终时机修正版 */ -}}
 <script>
   (function() {
     const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
     
-    // 定义基础目录：模型文件所在的目录（注意末尾的斜杠）
+    // 定义基础目录和文件名
     const modelBaseDir = cdnPath + "/Resources/model/lafei/";
-    // 定义模型文件名
     const modelFileName = "lafei.model3.json";
     
     const config = {
       path: {
         homePath: "/",
-        // 注意：这里传递给 SDK 的应该是基础目录
         modelPath: modelBaseDir,
         cssPath: cdnPath + "/css/waifu.css",
         tipsJsonPath: cdnPath + "/Resources/waifu-tips.json",
@@ -19,15 +17,12 @@
         live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
         live2dSdkPath: cdnPath + "/js/live2d-sdk.js"
       },
-      // 暂时只保留基本功能
       tools: ["hitokoto", "asteroids", "express", "photo", "info", "quit"],
       drag: { enable: true, direction: ["x", "y"] },
       switchType: "order"
     };
 
-    console.log('Live2D 标准流程修复版启动', cdnPath);
-    console.log('模型基础目录:', modelBaseDir);
-    console.log('模型文件名:', modelFileName);
+    console.log('Live2D 最终时机修正版启动', cdnPath);
 
     if (screen.width < 768) {
       console.log('移动端不显示');
@@ -42,27 +37,31 @@
     ]).then(() => {
       console.log('所有核心脚本加载完成');
       
-      // 等待 SDK 完全初始化
-      setTimeout(() => {
-        if (window.live2d) {
-          console.log('live2d 对象已找到，准备初始化...');
-          
-          // 第一步：初始化 SDK，设置模型文件的搜索路径为模型所在目录
-          // 注意：init 函数的参数应该是模型文件所在的目录
-          window.live2d.init(modelBaseDir);
-          console.log('init 调用完成，基础目录:', modelBaseDir);
-          
-          // 第二步：加载模型，这里只需要传入文件名
-          // SDK 会自动在 init 设置的目录下寻找这个文件
+      // 关键修复：等待 canvas 元素被创建
+      function waitForCanvas() {
+        const canvas = document.getElementById('live2d');
+        if (canvas) {
+          console.log('✅ canvas 元素已找到，准备初始化 SDK');
+          // 再给一点点时间让 canvas 完全准备好
           setTimeout(() => {
-            console.log('调用 loadModel，文件名:', modelFileName);
-            window.live2d.loadModel(modelFileName);
-          }, 500);
-          
+            if (window.live2d) {
+              console.log('调用 init，基础目录:', modelBaseDir);
+              window.live2d.init(modelBaseDir);
+              
+              setTimeout(() => {
+                console.log('调用 loadModel，文件名:', modelFileName);
+                window.live2d.loadModel(modelFileName);
+              }, 500);
+            }
+          }, 300);
         } else {
-          console.error('错误: live2d 对象未找到！');
+          console.log('等待 canvas 元素创建...');
+          setTimeout(waitForCanvas, 300);
         }
-      }, 1500);
+      }
+      
+      // 开始等待 canvas
+      waitForCanvas();
       
     }).catch(e => console.error('初始化失败:', e));
 
