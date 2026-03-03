@@ -1,9 +1,9 @@
-{{- /* 添加Live2D看板娘 - 最终时机修正版 */ -}}
+{{- /* 添加Live2D看板娘 - 手动创建版 */ -}}
 <script>
   (function() {
     const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
     
-    // 定义基础目录和文件名
+    // 定义模型基础目录和文件名
     const modelBaseDir = cdnPath + "/Resources/model/lafei/";
     const modelFileName = "lafei.model3.json";
     
@@ -22,13 +22,51 @@
       switchType: "order"
     };
 
-    console.log('Live2D 最终时机修正版启动', cdnPath);
+    console.log('Live2D 手动创建版启动', cdnPath);
 
     if (screen.width < 768) {
       console.log('移动端不显示');
       return;
     }
 
+    // ========== 手动创建看板娘 DOM 结构 ==========
+    function createWaifuDOM() {
+      // 检查是否已存在
+      if (document.getElementById('waifu')) {
+        console.log('看板娘 DOM 已存在');
+        return;
+      }
+      
+      console.log('手动创建看板娘 DOM 结构...');
+      
+      // 创建主容器
+      const waifuDiv = document.createElement('div');
+      waifuDiv.id = 'waifu';
+      
+      // 创建提示框
+      const tipsDiv = document.createElement('div');
+      tipsDiv.id = 'waifu-tips';
+      waifuDiv.appendChild(tipsDiv);
+      
+      // 创建 canvas
+      const canvas = document.createElement('canvas');
+      canvas.id = 'live2d';
+      canvas.width = 800;
+      canvas.height = 800;
+      waifuDiv.appendChild(canvas);
+      
+      // 创建工具栏
+      const toolDiv = document.createElement('div');
+      toolDiv.id = 'waifu-tool';
+      waifuDiv.appendChild(toolDiv);
+      
+      // 添加到页面
+      document.body.appendChild(waifuDiv);
+      
+      console.log('✅ 看板娘 DOM 创建完成');
+    }
+
+    // 先加载资源，再创建DOM，最后初始化SDK
     Promise.all([
       loadCSS(config.path.cssPath),
       loadScript(config.path.live2dCorePath),
@@ -37,31 +75,28 @@
     ]).then(() => {
       console.log('所有核心脚本加载完成');
       
-      // 关键修复：等待 canvas 元素被创建
-      function waitForCanvas() {
+      // 创建 DOM 结构
+      createWaifuDOM();
+      
+      // 给 DOM 一点时间渲染
+      setTimeout(() => {
         const canvas = document.getElementById('live2d');
         if (canvas) {
-          console.log('✅ canvas 元素已找到，准备初始化 SDK');
-          // 再给一点点时间让 canvas 完全准备好
-          setTimeout(() => {
-            if (window.live2d) {
-              console.log('调用 init，基础目录:', modelBaseDir);
-              window.live2d.init(modelBaseDir);
-              
-              setTimeout(() => {
-                console.log('调用 loadModel，文件名:', modelFileName);
-                window.live2d.loadModel(modelFileName);
-              }, 500);
-            }
-          }, 300);
+          console.log('✅ canvas 已就绪');
+          
+          if (window.live2d) {
+            console.log('调用 init，基础目录:', modelBaseDir);
+            window.live2d.init(modelBaseDir);
+            
+            setTimeout(() => {
+              console.log('调用 loadModel，文件名:', modelFileName);
+              window.live2d.loadModel(modelFileName);
+            }, 500);
+          }
         } else {
-          console.log('等待 canvas 元素创建...');
-          setTimeout(waitForCanvas, 300);
+          console.error('❌ canvas 创建失败');
         }
-      }
-      
-      // 开始等待 canvas
-      waitForCanvas();
+      }, 500);
       
     }).catch(e => console.error('初始化失败:', e));
 
