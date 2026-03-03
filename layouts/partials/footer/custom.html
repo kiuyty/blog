@@ -1,10 +1,7 @@
-{{- /* 添加Live2D看板娘 - SDK适配版 */ -}}
+{{- /* 添加Live2D看板娘 - 双模型适配版 */ -}}
 <script>
   (function() {
     const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
-    
-    // 定义模型所在的目录路径（关键修正）
-    const modelDirPath = cdnPath + "/Resources/model/lafei/";
     
     const config = {
       path: {
@@ -21,8 +18,7 @@
       switchType: "order"
     };
 
-    console.log('Live2D SDK适配版启动', cdnPath);
-    console.log('模型目录路径:', modelDirPath); // 现在输出的是目录
+    console.log('Live2D 双模型适配版启动', cdnPath);
 
     if (screen.width < 768) {
       console.log('移动端不显示');
@@ -45,12 +41,24 @@
         .then(modelData => {
           console.log('模型数据已加载:', modelData);
           
+          // 确保模型数据是数组且有内容
+          if (!modelData || modelData.length === 0) {
+            console.error('模型列表为空！');
+            return;
+          }
+          
+          // 初始化 localStorage 中的模型状态
+          if (!localStorage.getItem('modelId')) {
+            localStorage.setItem('modelId', '0');
+            localStorage.setItem('modelTexturesId', '0');
+          }
+          
           // 调用 initWidget
           if (typeof window.initWidget === 'function') {
             console.log('调用 initWidget');
             window.initWidget({
               waifuPath: config.path.tipsJsonPath,
-              cdnPath: config.path.modelPath, // 注意：这里仍然是 Resources 目录
+              cdnPath: config.path.modelPath,
               tools: config.tools,
               dragEnable: config.drag.enable,
               dragDirection: config.drag.direction,
@@ -59,14 +67,24 @@
             });
           }
           
-          // 按照 SDK 期望的方式加载模型
+          // 加载当前选中的模型
           setTimeout(() => {
             if (window.live2d) {
-              console.log('按照 SDK 规范加载模型，目录:', modelDirPath);
+              const currentModelId = parseInt(localStorage.getItem('modelId') || '0');
+              const currentModel = modelData[currentModelId];
               
-              // 重要：这里传入的是模型所在的目录路径
-              // SDK 会自动寻找目录下的 .model3.json 文件
-              window.live2d.loadModel(modelDirPath);
+              if (currentModel) {
+                // 构建模型路径：modelPath + modelPath字段 + model文件名
+                // 注意：currentModel.path 已经是 "model/模型名/" 格式
+                const modelFullPath = config.path.modelPath + currentModel.path + currentModel.model;
+                console.log('加载模型:', currentModel.name, '路径:', modelFullPath);
+                window.live2d.loadModel(modelFullPath);
+              } else {
+                console.error('找不到模型 ID:', currentModelId);
+                // 默认加载第一个模型
+                const defaultModelPath = config.path.modelPath + modelData[0].path + modelData[0].model;
+                window.live2d.loadModel(defaultModelPath);
+              }
             }
           }, 1500);
           
@@ -79,8 +97,14 @@
         const link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = url;
-        link.onload = () => resolve(url);
-        link.onerror = reject;
+        link.onload = () => {
+          console.log('CSS加载成功:', url);
+          resolve(url);
+        };
+        link.onerror = (e) => {
+          console.error('CSS加载失败:', url, e);
+          reject(url);
+        };
         document.head.appendChild(link);
       });
     }
@@ -89,8 +113,14 @@
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
         script.src = url;
-        script.onload = () => resolve(url);
-        script.onerror = reject;
+        script.onload = () => {
+          console.log('JS加载成功:', url);
+          resolve(url);
+        };
+        script.onerror = (e) => {
+          console.error('JS加载失败:', url, e);
+          reject(url);
+        };
         document.head.appendChild(script);
       });
     }
@@ -98,6 +128,19 @@
 </script>
 
 <style>
-  #waifu { right: 0; bottom: 0; left: auto; }
-  #waifu-toggle { right: 5px; left: auto; }
+  #waifu {
+    right: 0;
+    bottom: 0;
+    left: auto;
+    z-index: 9999;
+  }
+  #waifu-toggle {
+    right: 5px;
+    left: auto;
+    z-index: 9999;
+  }
+  /* 确保看板娘不被其他元素遮挡 */
+  #waifu canvas {
+    pointer-events: auto;
+  }
 </style>
