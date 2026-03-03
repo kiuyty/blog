@@ -1,16 +1,15 @@
-{{- /* 添加Live2D看板娘 - 手动创建版 */ -}}
+{{- /* 添加Live2D看板娘 - 绝对路径直载版 */ -}}
 <script>
   (function() {
     const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
     
-    // 定义模型基础目录和文件名
-    const modelBaseDir = cdnPath + "/Resources/model/lafei/";
-    const modelFileName = "lafei.model3.json";
+    // 直接定义模型的完整绝对路径
+    const modelFullPath = cdnPath + "/Resources/model/lafei/lafei.model3.json";
     
     const config = {
       path: {
         homePath: "/",
-        modelPath: modelBaseDir,
+        // 注意：我们不再使用 modelPath 给 init，因为 init 可能无效
         cssPath: cdnPath + "/css/waifu.css",
         tipsJsonPath: cdnPath + "/Resources/waifu-tips.json",
         tipsJsPath: cdnPath + "/js/waifu-tips.js",
@@ -22,16 +21,16 @@
       switchType: "order"
     };
 
-    console.log('Live2D 手动创建版启动', cdnPath);
+    console.log('Live2D 绝对路径直载版启动', cdnPath);
+    console.log('模型完整路径:', modelFullPath);
 
     if (screen.width < 768) {
       console.log('移动端不显示');
       return;
     }
 
-    // ========== 手动创建看板娘 DOM 结构 ==========
+    // 手动创建看板娘 DOM 结构
     function createWaifuDOM() {
-      // 检查是否已存在
       if (document.getElementById('waifu')) {
         console.log('看板娘 DOM 已存在');
         return;
@@ -39,34 +38,28 @@
       
       console.log('手动创建看板娘 DOM 结构...');
       
-      // 创建主容器
       const waifuDiv = document.createElement('div');
       waifuDiv.id = 'waifu';
       
-      // 创建提示框
       const tipsDiv = document.createElement('div');
       tipsDiv.id = 'waifu-tips';
       waifuDiv.appendChild(tipsDiv);
       
-      // 创建 canvas
       const canvas = document.createElement('canvas');
       canvas.id = 'live2d';
       canvas.width = 800;
       canvas.height = 800;
       waifuDiv.appendChild(canvas);
       
-      // 创建工具栏
       const toolDiv = document.createElement('div');
       toolDiv.id = 'waifu-tool';
       waifuDiv.appendChild(toolDiv);
       
-      // 添加到页面
       document.body.appendChild(waifuDiv);
-      
       console.log('✅ 看板娘 DOM 创建完成');
     }
 
-    // 先加载资源，再创建DOM，最后初始化SDK
+    // 加载资源
     Promise.all([
       loadCSS(config.path.cssPath),
       loadScript(config.path.live2dCorePath),
@@ -75,26 +68,19 @@
     ]).then(() => {
       console.log('所有核心脚本加载完成');
       
-      // 创建 DOM 结构
       createWaifuDOM();
       
-      // 给 DOM 一点时间渲染
       setTimeout(() => {
         const canvas = document.getElementById('live2d');
-        if (canvas) {
+        if (canvas && window.live2d) {
           console.log('✅ canvas 已就绪');
           
-          if (window.live2d) {
-            console.log('调用 init，基础目录:', modelBaseDir);
-            window.live2d.init(modelBaseDir);
-            
-            setTimeout(() => {
-              console.log('调用 loadModel，文件名:', modelFileName);
-              window.live2d.loadModel(modelFileName);
-            }, 500);
-          }
+          // 关键修改：跳过 init，直接使用绝对路径加载
+          console.log('直接使用绝对路径加载模型:', modelFullPath);
+          window.live2d.loadModel(modelFullPath);
+          
         } else {
-          console.error('❌ canvas 创建失败');
+          console.error('❌ canvas 或 live2d 对象未就绪');
         }
       }, 500);
       
