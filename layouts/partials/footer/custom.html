@@ -1,4 +1,4 @@
-{{- /* 添加Live2D看板娘 - 双模型适配版 */ -}}
+{{- /* 添加Live2D看板娘 - 终极内部状态修复版 */ -}}
 <script>
   (function() {
     const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
@@ -18,7 +18,7 @@
       switchType: "order"
     };
 
-    console.log('Live2D 双模型适配版启动', cdnPath);
+    console.log('Live2D 终极修复版启动', cdnPath);
 
     if (screen.width < 768) {
       console.log('移动端不显示');
@@ -31,29 +31,57 @@
       loadScript(config.path.live2dSdkPath),
       loadScript(config.path.tipsJsPath).then(() => {
         console.log('waifu-tips.js 已加载');
-        return new Promise(resolve => setTimeout(resolve, 500));
+        return new Promise(resolve => setTimeout(resolve, 800)); // 给更多时间初始化
       })
     ]).then(() => {
-      console.log('所有资源就绪...');
+      console.log('所有资源就绪，开始深度修复...');
       
       return fetch(config.path.modelPath + 'model_list.json')
         .then(r => r.json())
         .then(modelData => {
           console.log('模型数据已加载:', modelData);
           
-          // 确保模型数据是数组且有内容
-          if (!modelData || modelData.length === 0) {
-            console.error('模型列表为空！');
-            return;
+          // ========== 深度修复内部状态 ==========
+          
+          // 1. 修复 localStorage 状态
+          localStorage.setItem('modelId', '0');
+          localStorage.setItem('modelTexturesId', '0');
+          
+          // 2. 尝试找到并修复 waifu-tips.js 内部的全局变量
+          // 常见的内部变量名
+          const possibleVarNames = ['modelList', 'ModelList', 'models', 'g_modelList', '_modelList'];
+          possibleVarNames.forEach(name => {
+            if (window[name] !== undefined) {
+              console.log('找到内部变量:', name, '正在修复...');
+              window[name] = { models: modelData };
+            }
+          });
+          
+          // 3. 如果存在 ModelLoader 实例，直接修复它
+          if (window.modelLoader) {
+            console.log('找到 modelLoader 实例');
+            window.modelLoader.modelList = { models: modelData };
           }
           
-          // 初始化 localStorage 中的模型状态
-          if (!localStorage.getItem('modelId')) {
-            localStorage.setItem('modelId', '0');
-            localStorage.setItem('modelTexturesId', '0');
+          // 4. 遍历所有全局对象，尝试找到包含模型的变量
+          for (let key in window) {
+            try {
+              if (window[key] && typeof window[key] === 'object') {
+                // 如果对象有 models 属性且是数组，但为空
+                if (window[key].models && Array.isArray(window[key].models) && window[key].models.length === 0) {
+                  console.log('修复对象:', key);
+                  window[key].models = modelData;
+                }
+                // 如果对象本身就是数组且为空
+                if (Array.isArray(window[key]) && window[key].length === 0) {
+                  console.log('修复数组:', key);
+                  window[key] = modelData;
+                }
+              }
+            } catch (e) {}
           }
           
-          // 调用 initWidget
+          // 5. 调用 initWidget（作为辅助）
           if (typeof window.initWidget === 'function') {
             console.log('调用 initWidget');
             window.initWidget({
@@ -67,28 +95,22 @@
             });
           }
           
-          // 加载当前选中的模型
+          // 6. 加载第一个模型 - 使用正确的绝对路径
           setTimeout(() => {
             if (window.live2d) {
-              const currentModelId = parseInt(localStorage.getItem('modelId') || '0');
-              const currentModel = modelData[currentModelId];
+              // 构建正确的模型路径：直接指向 model3.json 文件
+              const modelFullPath = config.path.modelPath + 'model/lafei/lafei.model3.json';
+              console.log('使用绝对路径加载模型:', modelFullPath);
               
-              if (currentModel) {
-                // 构建模型路径：modelPath + modelPath字段 + model文件名
-                // 注意：currentModel.path 已经是 "model/模型名/" 格式
-                const modelFullPath = config.path.modelPath + currentModel.path + currentModel.model;
-                console.log('加载模型:', currentModel.name, '路径:', modelFullPath);
-                window.live2d.loadModel(modelFullPath);
-              } else {
-                console.error('找不到模型 ID:', currentModelId);
-                // 默认加载第一个模型
-                const defaultModelPath = config.path.modelPath + modelData[0].path + modelData[0].model;
-                window.live2d.loadModel(defaultModelPath);
-              }
+              // 重要：先初始化，但注意不要重复拼接路径
+              window.live2d.init(config.path.modelPath + 'model/');
+              
+              // 直接加载文件，而不是目录
+              window.live2d.loadModel(modelFullPath);
             }
-          }, 1500);
+          }, 1000);
           
-          console.log('🎉 初始化完成');
+          console.log('🎉 深度修复完成');
         });
     }).catch(e => console.error('初始化失败:', e));
 
@@ -139,7 +161,6 @@
     left: auto;
     z-index: 9999;
   }
-  /* 确保看板娘不被其他元素遮挡 */
   #waifu canvas {
     pointer-events: auto;
   }
