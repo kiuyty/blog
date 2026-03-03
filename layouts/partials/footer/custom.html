@@ -1,24 +1,33 @@
-{{- /* 添加Live2D看板娘 - 底层API直载版 */ -}}
+{{- /* 添加Live2D看板娘 - 标准流程修复版 */ -}}
 <script>
   (function() {
     const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
     
+    // 定义基础目录：模型文件所在的目录（注意末尾的斜杠）
+    const modelBaseDir = cdnPath + "/Resources/model/lafei/";
+    // 定义模型文件名
+    const modelFileName = "lafei.model3.json";
+    
     const config = {
       path: {
         homePath: "/",
-        modelPath: cdnPath + "/Resources/",
+        // 注意：这里传递给 SDK 的应该是基础目录
+        modelPath: modelBaseDir,
         cssPath: cdnPath + "/css/waifu.css",
         tipsJsonPath: cdnPath + "/Resources/waifu-tips.json",
         tipsJsPath: cdnPath + "/js/waifu-tips.js",
         live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
         live2dSdkPath: cdnPath + "/js/live2d-sdk.js"
       },
-      tools: ["hitokoto", "asteroids", "express", "photo", "info", "quit"], // 先禁用切换按钮
+      // 暂时只保留基本功能
+      tools: ["hitokoto", "asteroids", "express", "photo", "info", "quit"],
       drag: { enable: true, direction: ["x", "y"] },
       switchType: "order"
     };
 
-    console.log('Live2D 底层API直载版启动', cdnPath);
+    console.log('Live2D 标准流程修复版启动', cdnPath);
+    console.log('模型基础目录:', modelBaseDir);
+    console.log('模型文件名:', modelFileName);
 
     if (screen.width < 768) {
       console.log('移动端不显示');
@@ -29,50 +38,32 @@
       loadCSS(config.path.cssPath),
       loadScript(config.path.live2dCorePath),
       loadScript(config.path.live2dSdkPath),
-      loadScript(config.path.tipsJsPath).then(() => {
-        console.log('waifu-tips.js 已加载');
-        return new Promise(resolve => setTimeout(resolve, 800));
-      })
+      loadScript(config.path.tipsJsPath)
     ]).then(() => {
-      console.log('所有资源就绪，准备使用底层API加载模型...');
+      console.log('所有核心脚本加载完成');
       
-      // 等待 live2d 对象完全初始化
+      // 等待 SDK 完全初始化
       setTimeout(() => {
-        if (window.live2d && window.live2d.core) {
-          console.log('live2d core 已就绪');
+        if (window.live2d) {
+          console.log('live2d 对象已找到，准备初始化...');
           
-          // 构建模型文件的完整URL
-          const modelUrl = config.path.modelPath + 'model/lafei/lafei.model3.json';
-          console.log('尝试加载模型:', modelUrl);
+          // 第一步：初始化 SDK，设置模型文件的搜索路径为模型所在目录
+          // 注意：init 函数的参数应该是模型文件所在的目录
+          window.live2d.init(modelBaseDir);
+          console.log('init 调用完成，基础目录:', modelBaseDir);
           
-          // 使用底层API加载
-          // 注意：这里假设 live2d.core 有 loadModel 方法
-          if (window.live2d.core && typeof window.live2d.core.loadModel === 'function') {
-            window.live2d.core.loadModel(modelUrl).then(model => {
-              console.log('模型加载成功:', model);
-              
-              // 将模型绑定到 canvas
-              const canvas = document.getElementById('live2d');
-              if (canvas && model) {
-                model.mount(canvas);
-                model.startMotion();
-                console.log('模型已挂载到画布');
-              }
-            }).catch(err => {
-              console.error('底层API加载失败:', err);
-            });
-          } else {
-            // 如果底层API不可用，回退到标准方法但使用目录路径
-            console.log('底层API不可用，使用目录路径回退方案');
-            const modelDir = config.path.modelPath + 'model/lafei/';
-            window.live2d.loadModel(modelDir);
-          }
+          // 第二步：加载模型，这里只需要传入文件名
+          // SDK 会自动在 init 设置的目录下寻找这个文件
+          setTimeout(() => {
+            console.log('调用 loadModel，文件名:', modelFileName);
+            window.live2d.loadModel(modelFileName);
+          }, 500);
+          
         } else {
-          console.error('live2d core 未就绪');
+          console.error('错误: live2d 对象未找到！');
         }
-      }, 2000);
+      }, 1500);
       
-      console.log('🎉 初始化流程完成');
     }).catch(e => console.error('初始化失败:', e));
 
     function loadCSS(url) {
