@@ -1,8 +1,23 @@
-<link rel="stylesheet" href="{{ "live2d/waifu.css" | relURL }}">
+<!-- 看板娘 -->
+<link rel="stylesheet" href="/blog/static/live2d/css/waifu.css">
+<script src="/blog/static/live2d/js/jquery.min.js"></script>
+<script src="/blog/static/live2d/js/live2d.min.js"></script>
+<script src="/blog/static/live2d/js/waifu-tips.js"></script>
 
-<script src="{{ "live2d/live2d.min.js" | relURL }}"></script>
-<script src="{{ "live2d/waifu-tips.js" | relURL }}"></script>
+<script type="text/javascript">
+function initModel() {
+    if (typeof loadLive2d !== 'undefined') {
+        loadLive2d(
+            'waifu', 
+            '/blog/static/live2d/Resources/model/lafei/lafei.model3.json'
+        );
+    }
+}
 
-<script>
-initModel("{{ "live2d/model/haru/haru.model.json" | relURL }}")
+// 确保 DOM 加载完成后再初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initModel);
+} else {
+    initModel();
+}
 </script>
