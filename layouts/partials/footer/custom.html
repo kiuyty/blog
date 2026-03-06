@@ -1,12 +1,20 @@
+<!-- Live2D CSS -->
 <link rel="stylesheet" href="{{ "live2d/css/waifu.css" | relURL }}">
 
+<!-- Live2D 核心和 SDK -->
 <script src="{{ "live2d/Core/live2dcubismcore.js" | relURL }}"></script>
 <script src="{{ "live2d/js/live2d-sdk.js" | relURL }}"></script>
 <script src="{{ "live2d/js/waifu-tips.js" | relURL }}"></script>
 
 <script>
-initWidget({
-  waifuPath: "{{ "live2d/Resources/waifu-tips.json" | relURL }}",
-  cdnPath: "{{ "live2d/Resources/" | relURL }}"
+document.addEventListener("DOMContentLoaded", function() {
+  initWidget({
+    waifuPath: "{{ "live2d/Resources/waifu-tips.json" | relURL }}",
+    cdnPath: "{{ "live2d/Resources/" | relURL }}",
+    tools: ["hitokoto", "asteroids", "express", "switch-model", "switch-texture", "photo", "info", "quit"],
+    dragEnable: true,
+    dragDirection: ["x", "y"],
+    switchType: "order"
+  });
 });
 </script>
