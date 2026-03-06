@@ -1,20 +1,19 @@
-<!-- 看板娘 - 适配自定义域名 -->
-<link rel="stylesheet" href="/static/live2d/css/waifu.css">
-<script src="/static/live2d/js/jquery.min.js"></script>
-<script src="/static/live2d/js/live2d.min.js"></script>
-<script src="/static/live2d/js/waifu-tips.js"></script>
+<!-- 看板娘 - 正确路径（去掉 /static） -->
+<link rel="stylesheet" href="/live2d/css/waifu.css">
+<script src="/live2d/js/jquery.min.js"></script>
+<script src="/live2d/js/live2d.min.js"></script>
+<script src="/live2d/js/waifu-tips.js"></script>
 
 <script type="text/javascript">
 function initModel() {
     if (typeof loadLive2d !== 'undefined') {
         loadLive2d(
-            'waifu', 
-            '/static/live2d/Resources/model/lafei/lafei.model3.json'
+            'waifu',
+            '/live2d/Resources/model/lafei/lafei.model3.json'
         );
     }
 }
 
-// 确保 DOM 加载完成后再初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initModel);
 } else {
