@@ -1,8 +1,12 @@
-<link rel="stylesheet" href="{{ "live2d/waifu.css" | relURL }}">
+<link rel="stylesheet" href="{{ "live2d/css/waifu.css" | relURL }}">
 
-<script src="{{ "live2d/live2d.min.js" | relURL }}"></script>
-<script src="{{ "live2d/waifu-tips.js" | relURL }}"></script>
+<script src="{{ "live2d/Core/live2dcubismcore.js" | relURL }}"></script>
+<script src="{{ "live2d/js/live2d-sdk.js" | relURL }}"></script>
+<script src="{{ "live2d/js/waifu-tips.js" | relURL }}"></script>
 
 <script>
-initModel("{{ "live2d/model/haru/haru.model.json" | relURL }}")
+initWidget({
+  waifuPath: "{{ "live2d/Resources/waifu-tips.json" | relURL }}",
+  cdnPath: "{{ "live2d/Resources/" | relURL }}"
+});
 </script>
