@@ -1,10 +1,12 @@
 {
   "models": [
-    ["lafei"],
-    ["lafei_4"]
-  ],
-  "messages": [
-    ["拉菲来啦~"],
-    ["换装拉菲~"]
+    {
+      "name": "lafei",
+      "path": "model/lafei/"
+    },
+    {
+      "name": "lafei_4",
+      "path": "model/lafei_4/"
+    }
   ]
 }
