@@ -3,15 +3,15 @@
   (function() {
     const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
     
-    // 定义模型所在的目录路径（关键修正）
-    const modelDirPath = cdnPath + "/Resources/model/";
+    // 基础路径 - 注意结尾没有斜杠
+    const basePath = cdnPath + "/Resources";
     
     const config = {
       path: {
         homePath: "/",
-        modelPath: cdnPath + "/Resources/",
+        modelPath: basePath + "/",  // 给 initWidget 用的
         cssPath: cdnPath + "/css/waifu.css",
-        tipsJsonPath: cdnPath + "/Resources/waifu-tips.json",
+        tipsJsonPath: basePath + "/waifu-tips.json",
         tipsJsPath: cdnPath + "/js/waifu-tips.js",
         live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
         live2dSdkPath: cdnPath + "/js/live2d-sdk.js"
@@ -22,7 +22,6 @@
     };
 
     console.log('Live2D SDK适配版启动', cdnPath);
-    console.log('模型目录路径:', modelDirPath); // 现在输出的是目录
 
     if (screen.width < 768) {
       console.log('移动端不显示');
@@ -40,35 +39,40 @@
     ]).then(() => {
       console.log('所有资源就绪...');
       
-      return fetch(config.path.modelPath + 'model_list.json')
+      // 加载模型列表
+      return fetch(basePath + '/model_list.json')
         .then(r => r.json())
         .then(modelData => {
           console.log('模型数据已加载:', modelData);
           
-          // 调用 initWidget
+          // 初始化 waifu-tips 配置 - 注意这里使用 basePath + '/'
           if (typeof window.initWidget === 'function') {
             console.log('调用 initWidget');
             window.initWidget({
               waifuPath: config.path.tipsJsonPath,
-              cdnPath: config.path.modelPath, // 注意：这里仍然是 Resources 目录
+              cdnPath: basePath + '/',  // 确保结尾有斜杠
               tools: config.tools,
               dragEnable: config.drag.enable,
               dragDirection: config.drag.direction,
-              switchType: config.switchType,
-              modelList: { models: modelData }
+              switchType: config.switchType
             });
           }
           
-          // 按照 SDK 期望的方式加载模型
+          // 等待一段时间后加载第一个模型
           setTimeout(() => {
             if (window.live2d) {
-              console.log('按照 SDK 规范加载模型，目录:', modelDirPath);
-              
-              // 重要：这里传入的是模型所在的目录路径
-              // SDK 会自动寻找目录下的 .model3.json 文件
-              window.live2d.loadModel(modelDirPath);
+              // 从 model_list.json 获取第一个模型
+              const firstModel = modelData.models[0];
+              if (firstModel) {
+                // 构建完整的模型文件路径
+                const modelFilePath = basePath + '/' + firstModel.path;
+                console.log('加载模型:', firstModel.name, modelFilePath);
+                
+                // 直接加载 .model3.json 文件，而不是目录
+                window.live2d.loadModel(modelFilePath);
+              }
             }
-          }, 1500);
+          }, 2000);
           
           console.log('🎉 初始化完成');
         });
