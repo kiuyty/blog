@@ -4,12 +4,12 @@
   "FileReferences": {
     "Moc": "lafei.moc3",
     "Textures": [
-      "textures/texture_00.png",
-      "textures/texture_01.png",
-      "textures/texture_02.png",
-      "textures/texture_03.png",
-      "textures/texture_04.png",
-      "textures/texture_05.png"
+      "textures/texture_00.webp",
+      "textures/texture_01.webp",
+      "textures/texture_02.webp",
+      "textures/texture_03.webp",
+      "textures/texture_04.webp",
+      "textures/texture_05.webp"
     ],
     "Physics": "lafei.physics3.json",
     "Motions": {
@@ -67,4 +67,5 @@
       "Ids": ["ParamMouthOpenY"]
     }
   ]
+
 }
