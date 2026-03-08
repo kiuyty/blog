@@ -1,107 +1,64 @@
-{{- /* 添加Live2D看板娘 - SDK适配版 */ -}}
 <script>
-  (function() {
-    const cdnPath = "https://cdn.jsdelivr.net/gh/kiuyty/live2d@main";
-    
-    // 基础路径 - 注意结尾没有斜杠
-    const basePath = cdnPath + "/Resources";
-    
-    const config = {
-      path: {
-        homePath: "/",
-        modelPath: basePath + "/",  // 给 initWidget 用的
-        cssPath: cdnPath + "/css/waifu.css",
-        tipsJsonPath: basePath + "/waifu-tips.json",
-        tipsJsPath: cdnPath + "/js/waifu-tips.js",
-        live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
-        live2dSdkPath: cdnPath + "/js/live2d-sdk.js"
-      },
-      tools: ["hitokoto", "asteroids", "express", "switch-model", "switch-texture", "photo", "info", "quit"],
-      drag: { enable: true, direction: ["x", "y"] },
-      switchType: "order"
-    };
+  const cdnPath = "https://cdn.jsdelivr.net/gh/letere-gzj/live2d-widget-v3@main";
+  const config = {
+    // 资源路径
+    path: {
+      homePath: "/",
+      modelPath: cdnPath + "/Resources/",
+      cssPath: cdnPath + "/waifu.css",
+      tipsJsonPath: cdnPath + "/waifu-tips.json",
+      tipsJsPath: cdnPath + "/waifu-tips.js",
+      live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
+      live2dSdkPath: cdnPath + "/live2d-sdk.js"
+    },
+    // 工具栏
+    tools: ["hitokoto", "asteroids", "express", "switch-model", "switch-texture", "photo", "info", "quit"],
+    // 模型拖拽
+    drag: {
+      enable: true,
+      direction: ["x", "y"]
+    },
+    // 模型切换(order: 顺序切换，random: 随机切换)
+    switchType: "order"
+  }
 
-    console.log('Live2D SDK适配版启动', cdnPath);
-
-    if (screen.width < 768) {
-      console.log('移动端不显示');
-      return;
-    }
-
+  // 加载资源并初始化
+  if (screen.width >= 768) {
     Promise.all([
-      loadCSS(config.path.cssPath),
-      loadScript(config.path.live2dCorePath),
-      loadScript(config.path.live2dSdkPath),
-      loadScript(config.path.tipsJsPath).then(() => {
-        console.log('waifu-tips.js 已加载');
-        return new Promise(resolve => setTimeout(resolve, 500));
-      })
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js")
     ]).then(() => {
-      console.log('所有资源就绪...');
-      
-      // 加载模型列表
-      return fetch(basePath + '/model_list.json')
-        .then(r => r.json())
-        .then(modelData => {
-          console.log('模型数据已加载:', modelData);
-          
-          // 初始化 waifu-tips 配置 - 注意这里使用 basePath + '/'
-          if (typeof window.initWidget === 'function') {
-            console.log('调用 initWidget');
-            window.initWidget({
-              waifuPath: config.path.tipsJsonPath,
-              cdnPath: basePath + '/',  // 确保结尾有斜杠
-              tools: config.tools,
-              dragEnable: config.drag.enable,
-              dragDirection: config.drag.direction,
-              switchType: config.switchType
-            });
-          }
-          
-          // 等待一段时间后加载第一个模型
-          setTimeout(() => {
-            if (window.live2d) {
-              // 从 model_list.json 获取第一个模型
-              const firstModel = modelData.models[0];
-              if (firstModel) {
-                // 构建完整的模型文件路径
-                const modelFilePath = basePath + '/' + firstModel.path;
-                console.log('加载模型:', firstModel.name, modelFilePath);
-                
-                // 直接加载 .model3.json 文件，而不是目录
-                window.live2d.loadModel(modelFilePath);
-              }
-            }
-          }, 2000);
-          
-          console.log('🎉 初始化完成');
-        });
-    }).catch(e => console.error('初始化失败:', e));
-
-    function loadCSS(url) {
-      return new Promise((resolve, reject) => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = url;
-        link.onload = () => resolve(url);
-        link.onerror = reject;
-        document.head.appendChild(link);
+      initWidget({
+        waifuPath: config.path.tipsJsonPath,
+        cdnPath: config.path.modelPath,
+        tools: config.tools,
+        dragEnable: config.drag.enable,
+        dragDirection: config.drag.direction,
+        switchType: config.switchType
       });
-    }
+    });
+  }
 
-    function loadScript(url) {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = url;
-        script.onload = () => resolve(url);
-        script.onerror = reject;
-        document.head.appendChild(script);
-      });
-    }
-  })();
+  // 异步加载资源
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      }
+      else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => resolve(url);
+        tag.onerror = () => reject(url);
+        document.head.appendChild(tag);
+      }
+    });
+  }
 </script>
-
-<style>
-  #waifu { right: 0; bottom: 0; left: auto; }
-  #waifu-toggle { right: 5px; left: auto; }
-</style>
