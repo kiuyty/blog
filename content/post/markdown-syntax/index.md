@@ -10,7 +10,6 @@ tags:
 categories:
     - 教程
     - 技术写作
-\weight:文章置顶标签\
 ---
 
 # Markdown 语法完全指南：从入门到精通
