@@ -36,4 +36,8 @@ categories:
 > 导出Live2d文件![image](导出.png)
 > 得到的所有文件![image](files.png)
 
+## 制作
+
+打开Live2DViewerEX的EX工作室
+
 <center>#未完待续</center>
