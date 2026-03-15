@@ -1,7 +1,7 @@
 ---
 title: Markdown 语法完全指南：从入门到精通
 date: 2023-09-07
-description: 一份全面的Markdown语法教程，包含基础语法、高级特性以及HTML元素的样式展示（由deepseek生成）
+description: 一份全面的Markdown语法教程，包含基础语法、高级特性以及HTML元素的样式展示（本文由deepseek生成，主要是为了方便自己）
 tags: 
     - markdown
     - 教程
@@ -10,6 +10,7 @@ tags:
 categories:
     - 教程
     - 技术写作
+\weight:文章置顶标签\
 ---
 
 # Markdown 语法完全指南：从入门到精通
