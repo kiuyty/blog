@@ -1,6 +1,6 @@
 ---
 title: 将Live2d皮肤设置为桌面壁纸
-data: 2026-03-16
+date: 2026-03-16
 description: 将碧蓝航线里喜欢的角色Live2d放到桌面上
 image: cover.png
 tags:
