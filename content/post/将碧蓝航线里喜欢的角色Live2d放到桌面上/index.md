@@ -1,0 +1,18 @@
+# 将碧蓝航线里喜欢的角色Live2d放到桌面上
+
+## 工具
+
+- **AssetstudioMod**
+下载链接https://github.com/aelurum/AssetStudio/tree/ArknightsStudio
+
+- **Live2DViewerEX**
+
+## 获取live2d文件
+
+手机打开文件管理器前往/storage/emulated/0/Android/data/com.bilibili.azurlane/files/AssetBundles/live2d/目录下找到自己想要的文件，我要做的是拉菲的白兔迎春皮肤，就是lafei_4。
+>"lafei"就是拉菲的拼音，后面的"_4"是拉菲的第4个皮肤,"_h"是婚皮"_g"是改造皮
+
+### 使用AssetStudioMod进行解包
+
+打开AssetStudioMod，选择Live2d的源文件，导出Live2d。就得到了我们需要的文件。
+
