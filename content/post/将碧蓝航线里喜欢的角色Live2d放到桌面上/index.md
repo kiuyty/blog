@@ -30,6 +30,6 @@ categories:
 ### 使用AssetStudioMod进行解包
 
 打开AssetStudioMod，选择Live2d的源文件，导出Live2d。就得到了我们需要的文件。
-![image](导入.png)
-![image](导出.png)
-![image](files.png)
+![image](导入.png)>导入
+![image](导出.png)>导出Live2d文件
+![image](files.png)>得到的所有文件
