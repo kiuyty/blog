@@ -45,12 +45,12 @@ Markdown 是一种轻量级标记语言，由 John Gruber 于2004年创建。它
 ```
 
 **实际效果：**
-# 一级标题
-## 二级标题
-### 三级标题
-#### 四级标题
-##### 五级标题
-###### 六级标题
+<p style="font-size: 2em; font-weight: bold; margin: 0.67em 0;">一级标题</p>
+<p style="font-size: 1.5em; font-weight: bold; margin: 0.83em 0;">二级标题</p>
+<p style="font-size: 1.17em; font-weight: bold; margin: 1em 0;">三级标题</p>
+<p style="font-size: 1em; font-weight: bold; margin: 1.33em 0;">四级标题</p>
+<p style="font-size: 0.83em; font-weight: bold; margin: 1.67em 0;">五级标题</p>
+<p style="font-size: 0.67em; font-weight: bold; margin: 2.33em 0;">六级标题</p>
 
 ### 2. 段落与换行
 
