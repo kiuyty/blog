@@ -27,7 +27,7 @@ categories:
 ![image](live2d源文件.png)
 >"lafei"就是拉菲的拼音，后面的"_4"是拉菲的第4个皮肤,"_h"是婚皮"_g"是改造皮
 
-### 使用AssetStudioMod进行解包
+## 使用AssetStudioMod进行解包
 
 打开AssetStudioMod，选择Live2d的源文件，导出Live2d。就得到了我们需要的文件。
 ![image](导入.png)>导入
