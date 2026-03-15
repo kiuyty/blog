@@ -1,3 +1,8 @@
+---
+title: 将Live2d皮肤设置为桌面壁纸
+description: 将碧蓝航线里喜欢的角色Live2d放到桌面上
+image: cover.png
+---
 # 将碧蓝航线里喜欢的角色Live2d放到桌面上
 
 ## 工具
