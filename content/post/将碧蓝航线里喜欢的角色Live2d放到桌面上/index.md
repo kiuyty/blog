@@ -32,4 +32,4 @@ categories:
 打开AssetStudioMod，选择Live2d的源文件，导出Live2d。就得到了我们需要的文件。
 ![image](导入.png)
 ![image](导出.png)
-
+![image](files.png)
