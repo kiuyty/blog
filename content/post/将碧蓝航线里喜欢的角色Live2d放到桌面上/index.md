@@ -21,6 +21,7 @@ categories:
 选择下载AssetStudioModGUI
 ![image](AssetStudioMod下载界面1.png)
 - **Live2DViewerEX**
+
 ![image](Live2DViewerEX下载.png)
 
 ## 获取live2d文件
