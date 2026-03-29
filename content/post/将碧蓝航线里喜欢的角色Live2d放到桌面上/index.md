@@ -1,6 +1,6 @@
 ---
 title: 将Live2d皮肤设置为桌面壁纸
-date: 2026-03-15
+date: 2026-03-29
 description: 将碧蓝航线里喜欢的角色Live2d放到桌面上
 image: cover.png
 tags:
@@ -18,18 +18,18 @@ categories:
 - **AssetstudioMod**
 
 下载链接https://github.com/aelurum/AssetStudio/tree/ArknightsStudio
-![image](AssetStudioMod下载界面.png)
+![image](images/AssetStudioMod下载界面.png)
 选择下载AssetStudioModGUI
-![image](AssetStudioMod下载界面1.png)
+![image](images/AssetStudioMod下载界面1.png)
 
 - **Live2DViewerEX**
 
-![image](Live2DViewerEX下载.png)
+![image](images/Live2DViewerEX下载.png)
 
 ## 获取live2d文件
 
 手机打开文件管理器前往/storage/emulated/0/Android/data/com.bilibili.azurlane/files/AssetBundles/live2d/目录下找到自己想要的文件，我要做的是拉菲的白兔迎春皮肤，就是lafei_4。
-![image](live2d源文件.png)
+![image](images/live2d源文件.png)
 
 > "lafei"就是拉菲的拼音，后面的"_4"是拉菲的第4个皮肤,"_h"是婚皮"_g"是改造皮
 
@@ -39,9 +39,9 @@ categories:
 
 > 导入
 > 
-> ![image](导入.png)
-> 导出Live2d文件![image](导出.png)
-> 得到的所有文件![image](files.png)
+> ![image](images/导入.png)
+> 导出Live2d文件![image](images/导出.png)
+> 得到的所有文件![image](images/files.png)
 
 ## 制作
 
@@ -59,7 +59,6 @@ categories:
 
 先点击hitareas，然后点击中间的加号，然后点击id后面的加号，然后就可以看见很多选项，这是l2d的各个部件。每个选项对应不同位置
 这时选择几个touch的选项，一般在列表最后面
-
 
 点击后会自动出现名字，下面的order代表图层层级，数字越大越靠上，用于在触摸区域重叠时做区分
 
