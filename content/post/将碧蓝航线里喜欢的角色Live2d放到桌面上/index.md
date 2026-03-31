@@ -48,7 +48,7 @@ categories:
 ### 打开Live2DViewerEX的EX工作室(或者打开Live2DViewerEX，点击上传物品-live2d编辑器)
 
 ![1774960489963](images/index/1774960489963.png)
-
+![1774962745095](images/index/1774962745095.png)
 选择模型文件夹，找到刚刚的live2d文件夹
 ![1774960521488](images/index/1774960521488.png)![1774960533096](images/index/1774960533096.png)
 首先创键配置文件
@@ -164,5 +164,4 @@ Start代表开场动作
 找到你刚刚做的lpk，打开
 ![1774962335849](images/index/1774962335849.png)
 加载live2d。
-
 
