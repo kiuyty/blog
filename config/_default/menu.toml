@@ -16,6 +16,15 @@
   icon = "photo"
     newtab = false
 
+[[main]]
+  identifier = "r2"
+  name = "网盘"
+  url = "https://r2.139673.xyz"
+  weight = 4
+  [main.params]
+  icon = "Cloud_Drive"
+    newtab = false
+
 [[social]]
     identifier = "github"
     name       = "GitHub"
