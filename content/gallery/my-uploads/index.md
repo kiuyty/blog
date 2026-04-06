@@ -21,5 +21,12 @@ cover:
     <figcaption>设计：五迷</figcaption>
   <p style="text-align:center; font-size:14px; color:#666; margin-top:4px;">2026-02-07</p>
 </figure>
+<figure class="my-image">
+    <img src="IMG_20260406_185823.jpg" alt="龙" width="300">
+<img src="IMG_20260406_185843.jpg" alt="镶嵌" width="300">
+    <figcaption>设计：以前折的，记不清了</figcaption>
+  <p style="text-align:center; font-size:14px; color:#666; margin-top:4px;">突然翻出两个以前折的</p>
+</figure>
 
 ---
+
