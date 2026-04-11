@@ -17,10 +17,7 @@ categories:
 
 - **AssetstudioMod**
 
-下载链接https://github.com/aelurum/AssetStudio/tree/ArknightsStudio
-![image](images/AssetStudioMod下载界面.png)
-选择下载AssetStudioModGUI
-![image](images/AssetStudioMod下载界面1.png)
+下载链接http://openlist.139673.xyz/@s/4aY11AKe
 
 - **Live2DViewerEX**
 
