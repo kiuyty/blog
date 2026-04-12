@@ -110,7 +110,7 @@
     initTocHide()
 </script>
 
-<!--背景-->
+<!-- 背景图片与动态遮罩 - 适配 Stack 主题 -->
 <style>
   body {
     position: relative;
@@ -118,28 +118,88 @@
     background-size: cover;
     background-attachment: fixed;
   }
-  
-  /* 暗色模式下添加黑色遮罩 */
-  @media (prefers-color-scheme: dark) {
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.55);
-      pointer-events: none;
-      z-index: 0;
-    }
-    
-    /* 确保内容在遮罩之上 */
-    body > * {
-      position: relative;
-      z-index: 1;
-    }
+
+  /* 默认明亮模式：不加遮罩 */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.55); /* 暗色模式遮罩颜色 */
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  /* 当 body 有 'dark-bg' 类时显示遮罩 */
+  body.dark-bg::before {
+    opacity: 1;
   }
 </style>
+
+<script>
+  (function() {
+    // 更新背景遮罩状态的函数
+    function updateBackgroundOverlay() {
+      let isDarkMode = false;
+      
+      // 1. 首先尝试从 localStorage 读取 Stack 主题设置
+      try {
+        const storedTheme = localStorage.getItem('stack-theme') || localStorage.getItem('theme');
+        if (storedTheme === 'dark') isDarkMode = true;
+        if (storedTheme === 'light') isDarkMode = false;
+      } catch(e) { /* 忽略 */ }
+      
+      // 2. 如果 localStorage 没有，尝试检测系统设置
+      if (localStorage.getItem('stack-theme') === null && localStorage.getItem('theme') === null) {
+        isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+      
+      // 3. 根据结果添加或移除 body 上的类
+      if (isDarkMode) {
+        document.body.classList.add('dark-bg');
+        console.log('深色模式已启用，背景变暗');
+      } else {
+        document.body.classList.remove('dark-bg');
+        console.log('明亮模式，背景正常');
+      }
+    }
+    
+    // 初始化
+    updateBackgroundOverlay();
+    
+    // 监听 localStorage 变化（当其他标签页修改主题时）
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'stack-theme' || e.key === 'theme') {
+        updateBackgroundOverlay();
+      }
+    });
+    
+    // 主动查找并监听 Stack 主题的切换按钮
+    function setupThemeToggleListener() {
+      // Stack 主题的切换按钮常见的选择器
+      const themeToggle = document.querySelector('.theme-toggle, [data-theme-toggle], .dark-mode-toggle');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+          // 等待 DOM 和 localStorage 更新
+          setTimeout(updateBackgroundOverlay, 50);
+        });
+        console.log('已找到主题切换按钮，已添加监听');
+      } else {
+        // 如果没找到，稍后再试
+        setTimeout(setupThemeToggleListener, 500);
+      }
+    }
+    
+    setupThemeToggleListener();
+    
+    // 监听系统主题变化（如果用户从未手动切换过主题）
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateBackgroundOverlay);
+  })();
+</script>
 
 <!--动态背景樱花飞舞-->
 <script src={{ (resources.Get "background/sakura.js").Permalink }}></script>
