@@ -109,3 +109,15 @@
     }
     initTocHide()
 </script>
+
+<!--背景-->
+<style>
+  body {
+    background: url({{ (resources.Get "background/背景图片名").Permalink }}) no-repeat center top;
+    background-size: cover;
+    background-attachment: fixed;
+  }
+</style>
+
+<!--动态背景樱花飞舞-->
+<script src={{ (resources.Get "background/sakura.js").Permalink }}></script>
