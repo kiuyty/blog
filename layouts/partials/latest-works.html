@@ -8,7 +8,7 @@
             <a class="latest-works-more" href="{{ $gallery.RelPermalink }}">查看全部 →</a>
         </h2>
         <div class="works-grid">
-            {{- range first 4 $works }}
+            {{- range first 2 $works }}
                 {{ partial "works/card.html" . }}
             {{- end }}
         </div>
