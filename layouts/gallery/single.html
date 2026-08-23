@@ -1,0 +1,23 @@
+{{ define "main" }}
+<article class="works-single">
+    <header class="works-header">
+        <h1 class="works-title">{{ .Title }}</h1>
+        <div class="works-meta-line">
+            {{- with .Params.designer }}<span class="works-designer">设计：{{ . }}</span>{{ end }}
+            <time class="works-date">{{ .Date.Format "2006-01-02" }}</time>
+        </div>
+    </header>
+
+    {{- $img := .Resources.GetMatch "cover.*" }}
+    {{- if $img }}
+        {{- $large := $img.Resize "1400x" }}
+    <figure class="works-figure">
+        <img src="{{ $large.RelPermalink }}" alt="{{ .Title }}" loading="lazy">
+    </figure>
+    {{- end }}
+
+    <section class="article-content">
+        {{ .Content }}
+    </section>
+</article>
+{{ end }}

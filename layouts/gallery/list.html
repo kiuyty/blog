@@ -1,0 +1,18 @@
+{{ define "main" }}
+    <header class="works-header">
+        <h1 class="works-title">{{ .Title }}</h1>
+        {{- with .Description }}<p class="works-description">{{ . }}</p>{{ end }}
+    </header>
+
+    {{- if .Content }}
+    <section class="article-content works-intro">
+        {{ .Content }}
+    </section>
+    {{- end }}
+
+    <div class="works-grid">
+        {{- range .Pages.ByDate.Reverse }}
+            {{ partial "works/card.html" . }}
+        {{- end }}
+    </div>
+{{ end }}

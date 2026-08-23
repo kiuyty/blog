@@ -1,0 +1,17 @@
+{{- $gallery := .Site.GetPage "gallery" -}}
+{{- if $gallery }}
+    {{- $works := $gallery.RegularPages.ByDate.Reverse }}
+    {{- if $works }}
+    <section class="latest-works">
+        <h2 class="latest-works-title">
+            <span>最新作品</span>
+            <a class="latest-works-more" href="{{ $gallery.RelPermalink }}">查看全部 →</a>
+        </h2>
+        <div class="works-grid">
+            {{- range first 4 $works }}
+                {{ partial "works/card.html" . }}
+            {{- end }}
+        </div>
+    </section>
+    {{- end }}
+{{- end }}

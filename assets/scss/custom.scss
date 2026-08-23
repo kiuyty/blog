@@ -60,3 +60,120 @@ pre code {
     }
   }
 }
+
+// ===== 作品集展示 =====
+.works-header {
+  margin-bottom: 24px;
+}
+
+.works-title {
+  font-size: 2rem;
+  margin: 0 0 8px;
+}
+
+.works-description {
+  color: var(--card-text-color-secondary, #777);
+  margin: 0;
+}
+
+.works-intro {
+  margin-bottom: 24px;
+}
+
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+  margin: 24px 0;
+}
+
+.works-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-decoration: none;
+  background: var(--card-background, #fff);
+  border-radius: var(--card-border-radius, 16px);
+  box-shadow: var(--shadow-l1, 0 1px 4px rgba(0, 0, 0, 0.08));
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.works-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-l2, 0 6px 20px rgba(0, 0, 0, 0.12));
+}
+
+.works-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  background: var(--card-separator-color, #eee);
+}
+
+.works-meta {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.works-name {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--card-text-color-main, #333);
+}
+
+.works-designer,
+.works-date {
+  font-size: 0.85rem;
+  color: var(--card-text-color-secondary, #777);
+}
+
+// 最新作品区块（主页）
+.latest-works {
+  margin-bottom: 40px;
+}
+
+.latest-works-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  margin: 0 0 16px;
+}
+
+.latest-works-more {
+  font-size: 0.95rem;
+  color: var(--accent-color, #4285f4);
+  text-decoration: none;
+}
+
+.latest-works-more:hover {
+  text-decoration: underline;
+}
+
+// 作品详情页
+.works-single {
+  max-width: 900px;
+}
+
+.works-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--card-text-color-secondary, #777);
+  font-size: 0.9rem;
+}
+
+.works-figure {
+  margin: 24px 0;
+  text-align: center;
+}
+
+.works-figure img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--card-border-radius, 16px);
+  box-shadow: var(--shadow-l2, 0 6px 20px rgba(0, 0, 0, 0.12));
+}

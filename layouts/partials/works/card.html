@@ -1,0 +1,14 @@
+{{- $img := .Resources.GetMatch "cover.*" -}}
+<a class="works-card" href="{{ .RelPermalink }}">
+    {{- if $img }}
+        {{- $thumb := $img.Fill "600x600 Center" }}
+    <img class="works-thumb" src="{{ $thumb.RelPermalink }}" alt="{{ .Title }}" loading="lazy">
+    {{- else }}
+    <span class="works-thumb works-thumb--placeholder"></span>
+    {{- end }}
+    <div class="works-meta">
+        <h2 class="works-name">{{ .Title }}</h2>
+        {{- with .Params.designer }}<span class="works-designer">设计：{{ . }}</span>{{ end }}
+        <time class="works-date">{{ .Date.Format "2006-01-02" }}</time>
+    </div>
+</a>
