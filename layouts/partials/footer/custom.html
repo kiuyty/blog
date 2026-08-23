@@ -180,3 +180,14 @@
 
 <!--动态背景樱花飞舞-->
 <script src={{ (resources.Get "background/sakura.js").Permalink }}></script>
+
+<!-- 看板娘默认位置：右下角（覆盖 CDN waifu.css 的左下角定位） -->
+<style>
+  #waifu {
+    left: auto !important;
+    right: 0 !important;
+  }
+  #waifu-tips {
+    right: 0;
+  }
+</style>
