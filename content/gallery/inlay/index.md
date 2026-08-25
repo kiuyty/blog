@@ -2,7 +2,7 @@
 title: "镶嵌"
 date: 2026-04-06
 description: "镶嵌式折纸，几何感十足的早年作品。"
-designer: "佚名"
+designer: "未知"
 tags: ["折纸", "几何", "镶嵌"]
 ---
 

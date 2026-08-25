@@ -177,3 +177,14 @@ pre code {
   border-radius: var(--card-border-radius, 16px);
   box-shadow: var(--shadow-l2, 0 6px 20px rgba(0, 0, 0, 0.12));
 }
+
+// ===== 隐藏左侧边栏滚动条（保留滚动能力） =====
+.left-sidebar {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE/Edge 旧 */
+
+  &::-webkit-scrollbar,
+  & *::-webkit-scrollbar {
+    display: none;              /* Chrome/Safari/Edge */
+  }
+}
